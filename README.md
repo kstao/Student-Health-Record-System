@@ -1,1 +1,3 @@
-# Student-Health-Record-System
+# Student Health Record System
+
+<p align='justify'>The student health record system is a system that can help users to manage student health data efficiently. The paper-based system has encountered a few issues because of suffering from non-uniform system defects such as folders of various sizes, colors, and designs. Besides, the existence of incomplete and redundant data occupied the storage space. In addition, information stored physically may cause data loss. It becomes quite challenging to manage a large number of student records manually. Pen and paper are no longer satisfactory for registering new students. This system provides solutions by storing all student’s health details in a database and application. With this system, users will be able to perform all functions easily. It may be used by health workers to track consulted students as well.</p>
