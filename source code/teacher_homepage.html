@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://kit.fontawesome.com/ecceb5410d.js" crossorigin="anonymous"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+  <script src="src/js/logout.js"></script>
+  <link rel="stylesheet" href="src/css/style.css">
+  <title>Teacher Homepage</title>
+  <style>
+    .footer{
+      position:relative;
+      bottom:0;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="topnav"><a><b>Teacher</b></a>
+    <div class="topnav-right">
+      <a href="teacher_viewList.html"> Health Record </a> 
+      <a href="teacher_viewApplication.html"> Medical Certificate </a>  
+      <a style="cursor: pointer;" id="logout"> Logout </a>
+    </div>
+    </div>
+  </header>
+  
+  <section>
+    <article>
+      <h1>Student Health Management System</h1>
+      <p>Manage student health data efficiently with all information are safely stored in database, perform all function easily and track consulted students.</p>
+    </article>
+  
+    <div class="multiple_cards">
+      <div class="cards">
+        <i class="fa-solid fa-laptop-medical fa-5x"></i>
+        <h3>Health Record</h3>
+        <p>View and search history of student health records together with the date. Inspect more info from vital signs data, diagnisis and treatment.</p>
+          <div>
+            <button id="viewList">View case list</button>
+          </div>
+      </div>
+      <div class="cards">
+        <i class="fa-solid fa-file-medical fa-5x"></i>
+        <h3>Medical Certificate</h3>
+        <p>Approve student's medical certificate if only they meet doctor off the class session.</p>
+          <div>
+            <button id="viewApplication">View application</button> &nbsp;&nbsp;&nbsp;&nbsp;
+            <button id="viewHistory">View history</button>
+          </div>
+      </div>
+    </div>
+  </section>
+  <div class="footer">
+    <p class="center">   
+    <p>Copyright ©️ 2022-2023 Group AA</p>
+  </div>
+</body>
+
+<script>
+  $(document).ready(function(){
+    if(sessionStorage.getItem('role') != '1')
+      location.href = 'login.html';
+  })
+
+  $('#viewList').click(function(){
+    location.href = 'teacher_viewList.html';
+  })
+
+  $('#viewApplication').click(function(){
+    location.href = 'teacher_viewApplication.html';
+  })
+
+  $('#viewHistory').click(function(){
+    location.href = 'teacher_viewHistory.html';
+  })
+
+</script>
+
+</html>

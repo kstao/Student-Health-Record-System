@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://kit.fontawesome.com/ecceb5410d.js" crossorigin="anonymous"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+  <script src="src/js/logout.js"></script>
+  <link rel="stylesheet" href="src/css/style.css">
+  <title>Appointment Status</title>
+  <style>
+    table{
+      width: 100%;
+    }
+    table, th, td{
+      border: 1px solid black;
+      border-collapse: collapse;
+      text-align: center;
+      padding: 10px;
+    }
+    
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="topnav"><a href="student_homepage.html"><i class="fa-solid fa-house"></i></a>
+      <div class="topnav-right">
+      <a href="student_record.html"> Health Record </a>
+      <a href="student_appointmentapplication.html"> Appointment </a>
+      <a href="student_certificate.html"> Medical Certificate </a> 
+      <a style="cursor: pointer;" id="logout"> Logout </a>
+    </div>
+    </div>
+  </header>
+  
+  <section>
+    <h2>Your Health Record</h2>
+    <table id="record">
+      <thead>
+      <tr>
+        <th width="5%">ID</th>
+        <th width="10%">Date</th>
+        <th width="">Message</th>
+        <th width="10%">Status</th>
+        <th width="10%">Action</th>
+      </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+  </section>
+  <div class="footer">
+    <p class="center">   
+    <p>Copyright ©️ 2022-2023 Group AA</p>
+  </div>
+
+  <script>
+    $(document).ready(function(){
+      if(sessionStorage.getItem('role') != '2')
+        location.href = 'login.html';
+      else{
+        var studentID = sessionStorage.getItem('id');
+        $.ajax({
+          url:"php/student_checkappointment.php", // ur location
+          type: "POST",
+          data: {studentID: studentID},
+          dataType:"json", //received data 
+          success: function(data){
+            console.log(data)
+            if(data.result == false) {
+              alert(data.message)
+            }
+            else {
+              var len = data.application.length;
+              for(var i=0; i<len; i++){
+
+                var appointmentID = data.application[i].appointmentID;
+                var date = data.application[i].date;
+                var message = data.application[i].message;
+                var status = data.application[i].status;
+
+                var tr_str = "<tr>" + 
+                  "<td title='"+appointmentID+"'>" + appointmentID + "</td>" +
+                  "<td><div class='row_data'>" + date + "</div></td>" +
+                  "<td><div class='row_data'>" + message + "</div></td>" +
+                  "<td><div class='row_data'>" + status + "</div></td>";
+
+                if(status == 'sent'){
+                   tr_str += "<td class='action'>"+
+                              "<button class='view' id='delete' appointmentID='"+ appointmentID +"'>DELETE</button>"+
+                              "</td>" ;
+                }
+                else{
+                  tr_str += "<td> - </td>";
+                }
+                  
+                tr_str += "</tr>";
+                  
+                $('#record tbody').append(tr_str);
+              }
+            }
+          },
+          error:function(data){
+            alert(JSON.stringify(data));
+          }
+        });
+      }
+    })
+
+    $( "table" ).on( "click", "button", function() {
+    var appointmentID = $(this).attr('appointmentID');
+    // console.log(id);
+    if(confirm("Are you sure to delete appointment id " + appointmentID) == true){
+      $.ajax({
+        url: "php/student_deleteAppointment.php",
+        data: {appointmentID:appointmentID},
+        type: "POST",
+        dataType: "JSON",
+        success: function(data){
+          console.log(data);
+            if(data.result == true){
+              alert(data.message);
+            location.reload();
+          }
+        },
+        error: function(data){
+          alert(JSON.stringify(data))
+        }
+      });
+    }
+  });
+  </script>
+ 
+</body>
+</html>

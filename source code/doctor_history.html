@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://kit.fontawesome.com/ecceb5410d.js" crossorigin="anonymous"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+  <script src="src/js/logout.js"></script>
+
+  <link rel="stylesheet" href="src/css/style.css">
+  <style>
+    table, td, th{
+      border: 1px solid black;
+      padding: 10px;
+      border-collapse: collapse;
+    }
+    table{
+      width: 100%;
+    }
+  </style>
+  <title>Doctor View MC History</title>
+  
+</head>
+
+<body>
+  <header>
+    <div class="topnav"><a href="doctor_homepage.html"><i class="fa-solid fa-house"></i></a>
+    <div class="topnav-right">
+    <a href="doctor_viewrecord.html"> Patient Record </a> 
+    <a href="doctor_appointment.html"> Appointment </a>
+    <a href="doctor_medical.html"> Medical Certificate </a>  
+    <a style="cursor: pointer;" id="logout"> Logout </a>
+    </div>
+    </div>
+    </header>
+  
+  <section>
+    <h2 class="center_text">ISSUE MEDICAL CERTIFICATE</h2>
+
+    <table id="record">
+			<thead>
+				<tr>
+					<th width="5%">ID</th>
+					<th width="10%">Date</th>
+					<th width="30%">Student Name</th>
+					<th width="30%">Message</th>
+					<th width="10%">Status</th>
+				</tr>
+			</thead>
+			<tbody>
+			</tbody>
+		</table>
+  </section>
+  <div class="footer">
+    <p class="center">   
+    <p>Copyright ©️ 2022-2023 Group AA</p>
+  </div>
+  
+</body>
+
+<script>
+  Date.prototype.toDateInputValue = (function() {
+    var local = new Date(this);
+    local.setMinutes(this.getMinutes() - this.getTimezoneOffset());
+    return local.toJSON().slice(0,10);
+  });
+  
+  $(document).ready(function(){
+    if(sessionStorage.getItem('role') != '3')
+        location.href = 'login.html';
+    })
+
+    $(document).ready(function(){
+    $.ajax({
+      url:"php/doctor_viewAppointment.php", // ur location
+      type: "POST",
+      dataType:"json", //received data 
+      success: function(data){
+        console.log(data)
+        if(data.result == false) {
+          alert(data.message)
+        }
+        else {
+          var len = data.application.length;
+          for(var i=0; i<len; i++){
+
+            var appointment_id = data.application[i].appointment_id;
+            var date = data.application[i].date;
+            var fullname = data.application[i].fullname;
+            var message = data.application[i].message;
+            var status = data.application[i].status;
+
+            if (status != 'sent'){
+              var tr_str = "<tr>" + 
+                "<td title='"+appointment_id+"' align='center'>" + appointment_id + "</td>" +
+                "<td><div class='row_data' align='center'>" + date + "</div></td>" +
+                "<td><div class='row_data'>" + fullname + "</div></td>" +
+                "<td><div class='row_data'>" + message + "</div></td>" +
+                "<td><div class='row_data' align='center'>" + status + "</div></td>" +
+                "</tr>"
+                ;
+
+              $('#record').append(tr_str);
+            }
+          }
+        }
+      },
+      error:function(data){
+        alert(JSON.stringify(data));
+      }
+    });
+  })
+
+ 
+</script>
+
+</html>

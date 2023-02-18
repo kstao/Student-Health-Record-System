@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://kit.fontawesome.com/ecceb5410d.js" crossorigin="anonymous"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+  <script src="src/js/logout.js"></script>
+  <link rel="stylesheet" href="src/css/style.css">
+  <title>Doctor View Appointment</title>
+  <style>
+    .container{
+      margin: 0 100px;
+    }
+    .card{
+      background-color: white;
+      border-radius: 20px;
+      padding: 20px;
+      margin: 20px 0;
+    }
+    table{
+      width: 100%;
+    }
+    button{
+      /* width: 100px; */
+      margin: 0 10px;
+    }
+    .view{
+      text-align: right;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="topnav"><a href="doctor_homepage.html"><i class="fa-solid fa-house"></i></a>
+      <div class="topnav-right">
+    <a href="doctor_viewrecord.html"> Patient Record </a> 
+      <a href="doctor_appointment.html"> Appointment </a>
+    <a href="doctor_medical.html"> Medical Certificate </a>  
+    <a style="cursor: pointer;" id="logout"> Logout </a>
+      </div>
+      </div>
+    </header>
+  
+  <section>
+    <h2 class="center_text">APPOINTMENTS</h2>
+    <div class="container">
+    </div>
+  </section>
+  <div class="footer">
+    <p class="center">   
+    <p>Copyright ©️ 2022-2023 Group AA</p>
+  </div>
+</body>
+
+<script>
+  $(document).ready(function(){
+    if(sessionStorage.getItem('role') != '3')
+      location.href = 'login.html';
+  })
+
+  $(document).ready(function(){
+    $.ajax({
+      url:"php/doctor_viewAppointment.php", // ur location
+      type: "POST",
+      dataType:"json", //received data 
+      success: function(data){
+        console.log(data)
+        if(data.result == false) {
+          alert(data.message)
+        }
+        else {
+          var len = data.application.length;
+          for(var i=0; i<len; i++){
+
+            var appointment_id = data.application[i].appointment_id;
+            var date = data.application[i].date;
+            var fullname = data.application[i].fullname;
+            var message = data.application[i].message;
+            var status = data.application[i].status;
+
+            if (status == 'sent'){
+              var tr_str = "<div class='card'><table>" +
+                "<tr><td width='30%'>Appointment ID</td><td>" + appointment_id + "</td></tr>" +
+                "<tr><td>Date</td><td>" + date + "</td></tr>" +
+                "<tr><td>Student Name</td><td>" + fullname + "</td></tr>" +
+                "<tr><td>Message</td><td>" + message + "</td></tr>" + 
+                "<tr><td colspan='2' align='center'></td></tr>" + 
+                "</table>" +
+                "<div><button id='approve' appointment_id='"+ appointment_id +"' >Approve</button>" + 
+                "<button id='reject' appointment_id='"+ appointment_id +"' >Reject</button></div></div>"
+
+              $('.container').append(tr_str);
+            }
+          }
+        }
+      },
+      error:function(data){
+        alert(JSON.stringify(data));
+      }
+    });
+
+    $(document).on( "click", "button", function() {
+      var doctor = sessionStorage.getItem('id');
+      var status = $(this).attr('id');
+      var appointment_id = $(this).attr('appointment_id');
+      console.log(status)
+      console.log(appointment_id)
+      if(confirm("Are you sure to " + status + " appointment id " + appointment_id) == true){
+        $.ajax({
+          url: "php/doctor_appointmentSubmission.php",
+          data: {status:status, appointment_id:appointment_id, doctor:doctor},
+          type: "POST",
+          dataType: "JSON",
+          success: function(data){
+            console.log(data);
+            if(data.result == true){
+              alert(data.message);
+              location.reload();
+            }
+          }
+        });
+      }
+    })
+  });
+
+  
+
+
+</script>
+
+</html>

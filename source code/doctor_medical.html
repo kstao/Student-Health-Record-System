@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://kit.fontawesome.com/ecceb5410d.js" crossorigin="anonymous"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+  <script src="src/js/logout.js"></script>
+
+  <link rel="stylesheet" href="src/css/style.css">
+  <style>
+    table, td, th{
+      border: 1px solid black;
+      padding: 10px;
+      border-collapse: collapse;
+    }
+    table{
+      width: 100%;
+    }
+  </style>
+  <title>Doctor Issue Medical Certificate</title>
+  
+</head>
+
+<body>
+  <header>
+    <div class="topnav"><a href="doctor_homepage.html"><i class="fa-solid fa-house"></i></a>
+    <div class="topnav-right">
+    <a href="doctor_viewrecord.html"> Patient Record </a> 
+    <a href="doctor_appointment.html"> Appointment </a>
+    <a href="doctor_medical.html"> Medical Certificate </a>  
+    <a style="cursor: pointer;" id="logout"> Logout </a>
+    </div>
+    </div>
+    </header>
+  
+  <section>
+    <h2 class="center_text">ISSUE MEDICAL CERTIFICATE</h2>
+
+    <table id="record">
+			<thead>
+				<tr>
+					<th width="5%">ID</th>
+					<th width="10%">Date</th>
+					<th width="20%">Student Name</th>
+					<th width="30%">Illness</th>
+					<th width="30%">Treatment</th>
+					<th width="5%">ISSUE</th>
+				</tr>
+			</thead>
+			<tbody>
+			</tbody>
+		</table>
+  </section>
+  <div class="footer">
+    <p class="center">   
+    <p>Copyright ©️ 2022-2023 Group AA</p>
+  </div>
+  
+</body>
+
+<script>
+  Date.prototype.toDateInputValue = (function() {
+    var local = new Date(this);
+    local.setMinutes(this.getMinutes() - this.getTimezoneOffset());
+    return local.toJSON().slice(0,10);
+  });
+  
+  $(document).ready(function(){
+    if(sessionStorage.getItem('role') != '3')
+        location.href = 'login.html';
+    })
+
+    $('#new').click(function(){
+      location.href = "doctor_addrecord.html";
+    })
+
+    $(document).ready(function () {
+			var id = sessionStorage.getItem('id');
+
+			$.ajax({
+				url: "php/doctor_viewRecord.php", // ur location
+				type: "POST",
+				data: { id: id }, //send data to php
+				dataType: "json", //received data 
+				success: function (data) {
+					if (data.result == false) {
+						console.log(data);
+					}
+					else if (data.result == true) {
+						var len = data.record.length;
+						var json_feedback = [];
+
+						for (var i = 0; i < len; i++) {
+							var date = data.record[i].date;
+							var record_id = data.record[i].record_id;
+							var illness = data.record[i].illness;
+							var treatment = data.record[i].treatment;
+							var fullname = data.record[i].fullname;
+							var student_id = data.record[i].student_id;
+
+							var tr_str = "<tr>" + 
+              "<td title='"+record_id+"'>" + record_id + "</td>" +
+              "<td><div class='row_data'>" + date + "</div></td>" +
+              "<td><div class='row_data'>" + fullname + "</div></td>" +
+              "<td><div class='row_data'>" + illness + "</div></td>" +
+              "<td><div class='row_data'>" + treatment + "</div></td>" +
+              "<td class='action'>"+
+                "<button class='view' id='issue' student_id='"+ student_id +"' name='"+ fullname +"'>ISSUE</button>"+
+              "</td>" +
+              "</tr>"
+              ;
+              $('#record tbody').append(tr_str);
+						}
+            
+					}
+				},
+				error: function (json_feedback) {
+					alert(JSON.stringify(data));
+				}
+			});
+		})
+
+    $( "table" ).on( "click", "button", function() {
+      console.log('asd')
+
+      date = new Date().toDateInputValue();
+      doctor_id = sessionStorage.getItem('id');
+      student_name = $(this).attr('name');
+      student_id = $(this).attr('student_id');
+
+      let duration = prompt("Please insert the duration of medical certificate to " + student_name + " from " + date);
+      if(duration === null){
+        return;
+      }
+      else if(isNaN(duration)){
+        alert("Please insert number for duration")
+      }
+      else if (!isNaN(duration)){
+        $.ajax({
+				url: "php/doctor_issueMedcert.php", // ur location
+				type: "POST",
+				data: { doctor_id:doctor_id, duration:duration, date:date, student_id:student_id }, //send data to php
+				dataType: "json", //received data 
+				success: function (data) {
+						console.log(data);
+
+					if (data.result == false) {
+						console.log(data);
+					}
+					else if (data.result == true) {
+            alert(data.message)
+					}
+				},
+				error: function (data) {
+					alert(JSON.stringify(data));
+				}
+			});
+    }
+
+  })
+
+</script>
+
+</html>

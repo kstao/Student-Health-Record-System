@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://kit.fontawesome.com/ecceb5410d.js" crossorigin="anonymous"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+  <script src="src/js/logout.js"></script>
+  <link rel="stylesheet" href="src/css/style.css">
+  <title>Appointment Application</title>
+</head>
+
+<body>
+  <header>
+		<div class="topnav"><a href="student_homepage.html"><i class="fa-solid fa-house"></i></a>
+      <div class="topnav-right">
+      <a href="student_record.html"> Health Record </a>
+      <a href="student_appointmentapplication.html"> Appointment </a>
+      <a href="student_certificate.html"> Medical Certificate </a> 
+      <a style="cursor: pointer;" id="logout"> Logout </a>
+    </div>
+    </div>
+  </header>
+  
+  <section>
+    <div style="display: flex; justify-content: space-between;">
+      <div class="cards2" style="width: 45%;">
+        <p style="font-size:larger">Make an <strong>Appointment</strong></p>
+        <p>Fill up the form to book an appointment with available doctor. Once approve, student needs to attend school clinic for treatment and receives medical certificate from health worker.</p>
+      </div>
+      <div style="width: 45%;">
+        <form action="php/student_appointmentSub.php" method="post" id="appointmentForm">
+          <table>
+            <tr>
+              <td>
+                <label for="Student ID">Student ID</label><br>
+                <input type="text" name="studentID" id="studentID" readonly>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <label for="Full Name">Full Name</label><br>
+                <input type="text" name="fullName" id="fullName" readonly>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2">
+                <label for="message">Message</label><br>
+                <textarea name="message" id="message" cols="30" rows="5"></textarea>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <label for="date">Date</label><br>
+                <input type="date" name="date" id="date">
+              </td>
+            </tr>
+          </table>
+          <!-- <button>Submit</button> -->
+          <input type="submit" value="Submit">
+        </form>
+      </div>
+    </div>
+
+  </section>
+  <div class="footer">
+    <p class="center">   
+    <p>Copyright ©️ 2022-2023 Group AA</p>
+  </div>
+  
+  <script>
+    Date.prototype.toDateInputValue = (function() {
+      var local = new Date(this);
+      local.setMinutes(this.getMinutes() - this.getTimezoneOffset());
+      return local.toJSON().slice(0,10);
+    });
+
+    $(document).ready(function(){
+      if(sessionStorage.getItem('role') != '2')
+        location.href = 'login.html';
+      else{
+        $("#studentID").val(sessionStorage.getItem('id'));
+        $("#fullName").val(sessionStorage.getItem('fullname'));
+        $('#date').val(new Date().toDateInputValue());
+
+        var frm = $("#appointmentForm");
+        frm.submit(function (e) {
+          e.preventDefault();
+          if(confirm("Are you sure to book an appointment at " + $("#date").val()) == true){
+            $.ajax({
+              type: frm.attr('method'),
+              url: frm.attr('action'),
+              data: frm.serialize(),
+              dataType: "json", //received data 
+              success: function (data) {
+                console.log(data);
+                if (data.result == true){
+                  alert(data.value);
+                }       
+              },
+              error: function (data) {
+                console.log(data);
+              },
+            });
+          }
+        })
+      }
+    })
+
+    
+  </script>
+   
+</body>
+</html>

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+  <link rel="stylesheet" href="src/css/style.css">
+  <style>
+    input[type=text], input[type=date], textarea, input[type=number], input[type=email], input[type=password]{
+      width: 100%;
+      padding: 5px;
+      margin: 0;
+      display: inline-block;
+      border: none;
+      background: #f1f1f1;
+      color:  #2C313F;
+    }
+    tr{
+      height: 35px;
+    }
+  </style>
+  <title>Registration</title>
+</head>
+
+<body>
+  <div class="middle">
+    <div>
+     <center><p>Already have a account? <a href="login.html">Login</a></p></center>
+      <div class="white_card">
+        <form action="php/registrationSub.php" method="post" id="register">
+          <p>
+          <table>
+            <tr>
+              <td>Full Name </td>
+              <td><input type="text" name="fullName" id="fullName" required></td>
+            </tr>
+            <tr>
+              <td>Username </td>
+              <td><input type="text" name="username" id="username" required></td>
+            </tr>
+            <tr>
+              <td>Age </td>
+              <td><input type="number" name="age" id="age" required></td>
+            </tr>
+            <tr>
+              <td>Gender</td>
+              <td><select name="gender" id="gender" required style="width: 100%;">
+                <option value="" disabled selected>-- GENDER --</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+              </select></td>
+            </tr>
+            <tr>
+              <td>Role</td>
+              <td><select name="role" id="role" required="required" style="width: 100%;">
+                <option value="" disabled selected>-- ROLE --</option>
+                <option value="1">Teacher</option>
+                <option value="2">Student</option>
+                <option value="3">Doctor</option>
+              </select></td>
+            </tr>
+            <tr>
+              <td>Contact Number</td>
+              <td><input type="text" name="phone" id="phone" required></td>
+            </tr>
+            <tr>
+              <td>Email</td>
+              <td><input type="email" name="email" id="email" required></td>
+            </tr>
+            <tr>
+              <td>Password</td>
+              <td><input type="password" name="password" id="password" required></td>
+            </tr>
+            <tr>
+              <td>Confirm Password</td>
+              <td><input type="password" name="confirmPassword" id="confirmPassword" required></td>
+            </tr>
+          
+        </table>
+          <input type="submit" value="Register">
+        </form>
+      </div>
+    </div>
+  </div>
+</body>
+<script>
+  var frm = $("#register");
+    frm.submit(function (e) {
+      e.preventDefault();
+      $.ajax({
+          type: frm.attr('method'),
+          url: frm.attr('action'),
+          data: frm.serialize(),
+          dataType: "json", //received data 
+          success: function (data) {
+            console.log(data);
+            if (data.result == false) {
+              alert(data.value);
+            }
+            else if (data.result == true) {
+              alert(data.value)
+              window.location.href = "login.html";
+            }
+          },
+          error: function (data) {
+            console.log(data);
+          },
+      });
+    })
+</script>
+</html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script
+      src="https://kit.fontawesome.com/ecceb5410d.js"
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="src/js/logout.js"></script>
+    <link rel="stylesheet" href="src/css/style.css" />
+    <title>MC Application</title>
+  </head>
+
+  <body>
+    <center>
+    <header>
+      <div class="topnav"><a href="student_homepage.html"><i class="fa-solid fa-house"></i></a>
+        <div class="topnav-right">
+        <a href="student_record.html"> Health Record </a>
+        <a href="student_appointmentapplication.html"> Appointment </a>
+        <a href="student_certificate.html"> Medical Certificate </a> 
+        <a style="cursor: pointer;" id="logout"> Logout </a>
+      </div>
+      </div>
+    </header>
+
+    <section>
+      <div>
+        <h2 class="center_text">MEDICAL CERTIFICATE</h2>
+        <p>
+          Submit medical certificate to teacher as proof meeting outside doctor
+          off the class session.
+        </p>
+        <form method="post" action="" enctype="multipart/form-data" id="certificateForm">
+          <input type="file" id="file" name="file" />
+          <input type="button" value="Upload" id="upload" />
+        </form>
+      </div>
+    </section>
+    <div class="footer">
+      <p class="center">   
+      <p>Copyright ©️ 2022-2023 Group AA</p>
+    </div>
+
+    <script>
+      $(document).ready(function () {
+        if (sessionStorage.getItem("role") != "2") location.href = "login.html";
+      });
+
+      $("#upload").click(function () {
+        var fd = new FormData();
+        var files = $("#file")[0].files;
+
+        // Check file selected or not
+        if (files.length > 0) {
+          fd.append("file", files[0]);
+          fd.append("studentID", sessionStorage.getItem('id'));
+
+          if(confirm("Please make sure correct file uploaded") == true){
+            $.ajax({
+              url: "php/student_certificateSub.php",
+              type: "post",
+              data: fd,
+              contentType: false,
+              processData: false,
+              dataType: "json", //received data 
+              success: function (data) {
+                console.log(data);
+                if (data.result == true) {
+                  alert(data.message);
+                } else {
+                  alert(data.message);
+                }
+              },
+            });
+          }
+        } else {
+          alert("Please select a file.");
+        }
+      });
+    </script>
+    </center>
+   
+  </body>
+</html>

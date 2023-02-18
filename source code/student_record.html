@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://kit.fontawesome.com/ecceb5410d.js" crossorigin="anonymous"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+  <script src="src/js/logout.js"></script>
+  <link rel="stylesheet" href="src/css/style.css">
+  <title>Your Health Record</title>
+  <style>
+    table{
+      width: 100%;
+    }
+    table, th, td{
+      border: 1px solid black;
+      border-collapse: collapse;
+      text-align: center;
+      padding: 10px;
+    }
+    .footer{
+      position:relative;
+      padding: 20px 0;
+      bottom: 0;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+		<div class="topnav"><a href="student_homepage.html"><i class="fa-solid fa-house"></i></a>
+      <div class="topnav-right">
+      <a href="student_record.html"> Health Record </a>
+      <a href="student_appointmentapplication.html"> Appointment </a>
+      <a href="student_certificate.html"> Medical Certificate </a> 
+      <a style="cursor: pointer;" id="logout"> Logout </a>
+    </div>
+    </div>
+  </header>
+  
+  <section>
+    <h2 class="center_text">YOUR HEALTH RECORD</h2>
+    <table id="record">
+      <thead>
+      <tr>
+        <th>ID</th>
+        <th>Medical Certificate</th>
+        <th>Status</th>
+      </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+   
+  </section>
+  <div class="footer">
+    <p class="center">   
+    <p>Copyright ©️ 2022-2023 Group AA</p>
+  </div>
+  
+  <script>
+    $(document).ready(function(){
+      if(sessionStorage.getItem('role') != '2')
+        location.href = 'login.html';
+      else{
+        var studentID = sessionStorage.getItem('id');
+        $.ajax({
+          url:"php/student_view.php", // ur location
+          type: "POST",
+          data: {studentID: studentID},
+          dataType:"json", //received data 
+          success: function(data){
+            console.log(data)
+            if(data.result == false) {
+              alert(data.message)
+            }
+            else {
+              var len = data.application.length;
+              for(var i=0; i<len; i++){
+
+                var medcert_id = data.application[i].medcert_id;
+                var filepath = data.application[i].filepath;
+                var status = data.application[i].status;
+                var start_date = data.application[i].start_date;
+                var duration = data.application[i].duration;
+
+                if (filepath == null){
+                  filepath = "Medical certificate issued with duration of " + duration + " days from " + start_date;
+                }
+                else{
+                  filepath = "<a href='uploads/" + filepath + "' target='_blank' style='all:revert; color:blue'>" + filepath   + "</a>"
+                }
+
+                var tr_str = "<tr>" + 
+                  "<td title='"+medcert_id+"'>" + medcert_id + "</td>" +
+                  "<td><div class='row_data'>" + filepath + "</div></td>" +
+                  "<td><div class='row_data'>" + status + "</div></td>" +
+                  "</tr>"
+                  ;
+                  
+                $('#record tbody').append(tr_str);
+              }
+            }
+          },
+          error:function(data){
+            alert(JSON.stringify(data));
+          }
+        });
+      }
+    })
+
+ 
+  </script>
+   
+</body>
+</html>

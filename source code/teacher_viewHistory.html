@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://kit.fontawesome.com/ecceb5410d.js" crossorigin="anonymous"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+  <script src="src/js/logout.js"></script>
+  <link rel="stylesheet" href="src/css/style.css">
+  <title>View History</title>
+  <style>
+  section{
+    text-align: center;
+  }
+  table{
+    width: 100%;
+  }
+  table, th, td{
+    border: 1px solid black;
+    border-collapse: collapse;
+  }
+  th, td{
+    padding: 10px;
+  }
+  </style>
+</head>
+
+<body>
+  <header>
+		<div class="topnav"><a href="teacher_homepage.html"><i class="fa-solid fa-house"></i></a>
+    <div class="topnav-right">
+    <a href="teacher_viewList.html"> Health Record </a> 
+    <a href="teacher_viewApplication.html"> Medical Certificate </a> 
+    <a style="cursor: pointer;" id="logout"> Logout </a>
+    </div>
+  </div>
+  </header>
+  
+  <section>
+  <h2>Medical certificate</h2>
+  <table id="application">
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>Student Name</th>
+      <th>Medical Certificate</th>
+      <th colspan="2">Action</th>
+    </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+  </section>
+  <div class="footer">
+    <p class="center">   
+    <p>Copyright ©️ 2022-2023 Group AA</p>
+  </div>
+</body>
+<script>
+  $(document).ready(function(){
+    if(sessionStorage.getItem('role') != '1')
+      location.href = 'login.html';
+    })
+
+  $(document).ready(function(){
+    $.ajax({
+      url:"php/teacher_viewApplication.php", // ur location
+      type: "POST",
+      dataType:"json", //received data 
+      success: function(data){
+        if(data.result == "false") {
+          alert(data.message)
+        }
+        else {
+          var len = data.application.length;
+          for(var i=0; i<len; i++){
+
+            var medcert_id = data.application[i].medcert_id;
+            var filepath = data.application[i].filepath;
+            var fullname = data.application[i].fullname;
+            var status = data.application[i].status;
+
+            if (status != 'sent' && filepath != null){
+              var tr_str = "<tr>" + 
+                "<td title='"+medcert_id+"'>" + medcert_id + "</td>" +
+                "<td><div class='row_data'>" + fullname + "</div></td>" +
+                "<td><div class='row_data'>" + "<a href='uploads/" + filepath + "' target='_blank' style='all:revert; color:blue'>" + filepath   + "</a>" + "</div></td>" +
+                "<td><div class='row_data'>" + status + "</div></td>" +
+                "</tr>"
+                ;
+                
+              $('#application tbody').append(tr_str);
+            }
+          }
+        }
+      },
+      error:function(data){
+        alert(JSON.stringify(data));
+      }
+    });
+  });
+  
+  $( "table" ).on( "click", "button", function() {
+    var status = $(this).attr('id');
+    var medcert_id = $(this).attr('medcert_id');
+    var teacher_id = sessionStorage.getItem('id');
+    // console.log(id);
+    $.ajax({
+				url: "php/teacher_applicationSub.php",
+				data: {status:status, teacher_id:teacher_id, medcert_id:medcert_id},
+				type: "POST",
+				dataType: "JSON",
+				success: function(data){
+					console.log(data);
+					if(data.result == true){
+            alert(data.message);
+						location.reload();
+					}
+				}
+			});
+  });
+			
+
+</script>
+
+</html>

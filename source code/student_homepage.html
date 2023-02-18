@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://kit.fontawesome.com/ecceb5410d.js" crossorigin="anonymous"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+	<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+  <script src="src/js/logout.js"></script>
+  <link rel="stylesheet" href="src/css/style.css">
+  <title>Student Homepage</title>
+  <style>
+    .footer{
+      position:relative;
+      padding: 20px 0
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="topnav"><a><b>Student</b></a>
+    <div class="topnav-right">
+      <a href="student_record.html"> Health Record </a>
+      <a href="student_appointmentapplication.html"> Appointment </a>
+      <a href="student_certificate.html"> Medical Certificate </a> 
+      <a style="cursor: pointer;" id="logout"> Logout </a>
+    </div>
+    </div>
+  </header>
+  
+  <section>
+    <article>
+      <h1>Student Health Management System</h1>
+      <p>Manage student health data efficiently with all information are safely stored in database, perform all function easily and track consulted students.</p>
+    </article>
+    <div id="content" class="container" style="display: flex; align-items: center; justify-content: center; ">
+      <div id="chartType" style="height: 370px; width: 100%;  margin: 0 10px"></div>
+      <div id="chartStatus" style="height: 370px; width: 100%;  margin: 0 10px"></div>
+    </div>
+
+    <div class="multiple_cards">
+      <div class="cards">
+        <i class="fa-solid fa-laptop-medical fa-5x"></i>
+        <h3>Health Record</h3>
+        <p>View and search history of past and presnt ilness together with the date. Inspect more info from vital signs data, diagnisis and treatment.</p>
+        <div>
+          <button id="view">View case list</button>
+        </div>
+      </div>
+      <div class="cards">
+        <i class="fa-regular fa-calendar-check fa-5x"></i>
+        <h3>Appointment</h3>
+        <p>Set an appointment anytime with the available doctor to receive treatment or advises as well as medication.</p>
+        <div>
+          <button id="book">Book now</button>&nbsp;&nbsp;&nbsp;
+          <button id="check">Check appointment</button>
+        </div>
+      </div>
+      <div class="cards">
+        <i class="fa-solid fa-file-medical fa-5x"></i>
+        <h3>Medical Certificate</h3>
+        <p>Apply medical certificate for future reference.</p>
+        <div>
+          <button id="get">Get medical certificate</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    $(document).ready(function(){
+
+      if(sessionStorage.getItem('role') != '2')
+        location.href = 'login.html';
+      
+      $('#view').click(function(){
+        location.href = 'student_record.html';
+      })
+
+      $('#book').click(function(){
+        location.href = 'student_appointmentapplication.html';
+      })
+
+      $('#get').click(function(){
+        location.href = 'student_certificate.html';
+      })
+
+      $('#check').click(function(){
+        location.href = 'student_checkappointment.html';
+      })
+    })
+    $(document).ready(function () {
+      var id = sessionStorage.getItem('id');
+      $.ajax({
+					url: "php/student_overall.php", // ur location
+					type: "POST",
+					data: {id:id},
+					dataType: "json", //received data 
+					success: function (data) {
+							console.log(data);
+
+						if (data.result == false) {
+							console.log(data);
+              $("#content").css("display", "none");
+						}
+						else if (data.result == true) {
+              if(data.appointment.length == 0 && data.medcert.length == 0)
+              {
+                $("#content").css("display", "none");
+              }
+              else{
+                console.log(data);
+                appointment_status = {};
+                appointment_type = {};
+                medcert_status = {};
+                medcert_type = {};
+                
+                for (var i = 0; i < data.appointment.length; i++) {
+                  status = data.appointment[i].status
+                  appointment_status[status] = (appointment_status[status] || 0) + 1;
+                }
+
+                for (var i = 0; i < data.medcert.length; i++) {
+                  status = data.medcert[i].status
+                  medcert_status[status] = (medcert_status[status] || 0) + 1;
+                }
+
+                // overall chart
+                var overall_type_label = []
+                for (const [key, value] of Object.entries(medcert_status)) {
+                  var obj = {};
+                  obj['y'] = parseInt(`${value}`)
+                  obj['feedback_type'] = `${key}`;
+                  overall_type_label.push(obj);
+                }
+
+                var chart = new CanvasJS.Chart("chartType", {
+                  theme: "light2", // "light1", "light2", "dark1", "dark2"
+                  animationEnabled: true,
+                  exportEnabled: true,
+                  title: {
+                    text: "MC Status"
+                  },
+                  data: [{
+                    type: "pie",
+                    toolTipContent: "<b>{feedback_type}</b>: {y}",
+                    showInLegend: "true",
+                    legendText: "{feedback_type}",
+                    indexLabelFontSize: 16,
+                    indexLabel: "{feedback_type} - {y}",
+                    dataPoints: overall_type_label
+                  }]
+                });
+                chart.render();
+
+
+                // overall chart
+                var overall_status_label = []
+                for (const [key, value] of Object.entries(appointment_status)) {
+                  var obj = {};
+                  obj['y'] = parseInt(`${value}`)
+                  obj['feedback_type'] = `${key}`;
+                  overall_status_label.push(obj);
+                }
+
+                var chart = new CanvasJS.Chart("chartStatus", {
+                  theme: "light2", // "light1", "light2", "dark1", "dark2"
+                  animationEnabled: true,
+                  exportEnabled: true,
+                  title: {
+                    text: "Appointment status"
+                  },
+                  data: [{
+                    type: "pie",
+                    toolTipContent: "<b>{feedback_type}</b>: {y}",
+                    showInLegend: "true",
+                    legendText: "{feedback_type}",
+                    indexLabelFontSize: 16,
+                    indexLabel: "{feedback_type} - {y}",
+                    dataPoints: overall_status_label
+                  }]
+                });
+                chart.render();
+              }
+
+						}
+					},
+					error: function (data) {
+						alert(JSON.stringify(data));
+					}
+				})
+			})
+	</script>
+ <div class="footer">
+  <p class="center">   
+  <p>Copyright ©️ 2022-2023 Group AA</p>
+</div>
+</body>
+
+</html>

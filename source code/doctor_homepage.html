@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://kit.fontawesome.com/ecceb5410d.js" crossorigin="anonymous"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+  <script src="src/js/logout.js"></script>
+  <link rel="stylesheet" href="src/css/style.css">
+  <title>Doctor Homepage</title>
+  <style>
+    .footer{
+      position:relative;
+      padding: 20px 0;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="topnav"><a><b>Doctor</b></a>
+    <div class="topnav-right">
+      <a href="doctor_viewrecord.html"> Patient Record </a> 
+      <a href="doctor_appointment.html"> Appointment </a> 
+      <a href="doctor_medical.html"> Medical Certificate </a>  
+      <a style="cursor: pointer;" id="logout"> Logout </a>
+    </div>
+    </div>
+  </header>
+  
+  <section>
+    <article>
+      <h1>Student Health Management System</h1>
+      <p>Manage student health data efficiently with all information are safely stored in database, perform all function easily and track consulted students.</p>
+    </article>
+
+    <div class="multiple_cards">
+      <div class="cards">
+        <i class="fa-solid fa-laptop-medical fa-5x"></i>
+        <h3>Health Record</h3>
+        <p>Add, update and delete students health records. Has access to view and search their past records as well.</p>
+        <div>  
+          <button id="view">View case list</button>&nbsp;&nbsp;&nbsp;&nbsp;
+          <button id="add">Add new record</button>
+        </div>
+      </div>
+      <div class="cards">
+        <i class="fa-regular fa-calendar-check fa-5x"></i>
+        <h3>Appointment</h3>
+        <p>View all appointments booked by students with assigned doctor to get reminder of the upcoming date.</p>
+        <div>
+          <button id="appointment">View Appointment</button>&nbsp;&nbsp;&nbsp;&nbsp;
+          <button id="history">View History</button>
+        </div>
+      </div>
+      <div class="cards">
+        <i class="fa-solid fa-file-medical fa-5x"></i>
+        <h3>Medical Certificate</h3>
+        <p>Issue medical certificate to student and manage their health records.</p>
+          <div>
+            <button id="issue">Issue student medical certificate</button>
+          </div>
+      </div>
+    </div>
+  </section>
+  <div class="footer">
+    <p class="center">   
+    <p>Copyright ©️ 2022-2023 Group AA</p>
+  </div>
+</body>
+
+<script>
+  $(document).ready(function(){
+    if(sessionStorage.getItem('role') != '3'){
+      location.href = 'login.html';
+    }
+    
+    $('#view').click(function(){
+      location.href = 'doctor_viewrecord.html';
+    })
+
+    $('#add').click(function(){
+      location.href = 'doctor_addrecord.html';
+    })
+
+    $('#appointment').click(function(){
+      location.href = 'doctor_appointment.html';
+    })
+
+    $('#history').click(function(){
+      location.href = 'doctor_history.html';
+    })
+
+    $('#issue').click(function(){
+      location.href = 'doctor_medical.html';
+    })
+  })
+</script>
+
+</html>

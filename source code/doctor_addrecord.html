@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://kit.fontawesome.com/ecceb5410d.js" crossorigin="anonymous"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+  <script src="src/js/logout.js"></script>
+  <link rel="stylesheet" href="src/css/style.css">
+  <title>Doctor Add Record</title>
+</head>
+
+<body>
+  <header>
+    <div class="topnav"><a href="doctor_homepage.html"><i class="fa-solid fa-house"></i></a>
+    <div class="topnav-right">
+    <a href="doctor_viewrecord.html"> Patient Record </a> 
+    <a href="doctor_appointment.html"> Appointment </a>
+    <a href="doctor_medical.html"> Medical Certificate </a>  
+    <a style="cursor: pointer;" id="logout"> Logout </a>
+    </div>
+    </div>
+    </header>
+  
+    <form action="php/doctor_addRecord.php" method="post" id="addRecord">
+      <section style="display: flex; justify-content: space-between;">
+        <div style="width: 35%; margin: 0 0 0 0px; padding: 0 40px ; border-style: solid; border-width: 2px;">
+          <p>
+            <label for="doctorID">Doctor ID</label><br>
+            <input type="text" name="doctorID" id="doctorID">
+          </p>
+          <p>
+            <label for="studentID">Student ID</label><br>
+            <input type="text" name="studentID" id="studentID">
+            <input type="button" value="Search Student" id="searchStudent">
+          </p>
+          <p>
+            <label for="fName">Full Name</label><br>
+            <input type="text" name="fName" id="fName">
+          </p>
+          <p>
+            <label for="age">Age</label><br>
+            <input type="text" name="age" id="age">
+          </p>
+          <p>
+            <label for="gender">Gender</label><br>
+            <input type="text" name="gender" id="gender">
+          </p>
+          <p>
+            <label for="email">Email</label><br>
+            <input type="email" name="email" id="email">
+          </p>
+          <p>
+            <label for="contact">Contact</label><br>
+            <input type="text" name="contact" id="contact">
+          </p>
+        </div>
+    
+        <div style="width: 50%; margin: 0 0 0 0px; padding: 0 40px ; border-style: solid; border-width: 2px;">
+          <div>
+            <p>
+              <label for="date">Date Consulted</label><br>
+              <input type="date" name="date" id="date">
+            </p>
+            <div style="display: flex; justify-content:flex-start;">
+              <p>
+                <label for="illness">Illness</label><br>
+                <textarea name="illness" id="illness" cols="30" rows="5" class="able" disabled required></textarea>
+              </p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              <p>
+                <label for="treatment">Treatment</label><br>
+                <textarea name="treatment" id="treatment" cols="30" rows="5" class="able" disabled required></textarea>
+              </p>
+            </div>
+          </div>
+    
+          <div style="display: flex; justify-content:space-between;">
+            <div style= "width: 45%;">
+              <p>
+                <label for="bloodPressure">Blood Pressure</label><br>
+                <input type="number" name="bloodPressure" id="bloodPressure" class="able" disabled required>
+              </p>
+              <p>
+                <label for="temperature">Temperature</label><br>
+                <input type="number" name="tempereature" id="tempereature" class="able" disabled required>
+              </p>
+              <p>
+                <label for="weight">Weight</label><br>
+                <input type="number" name="weight" id="weight" class="able" disabled required>
+              </p>
+              <p>
+                <label for="height">Height</label><br>
+                <input type="number" name="height" id="height" class="able" disabled required>
+              </p>
+            </div>
+            <div style="width: 45%;">
+              <p>
+                <label for="comment">Doctor Comment</label><br>
+                <textarea name="comment" id="comment" cols="50" rows="10" class="able" ></textarea>
+              </p>
+            </div>
+          </div>
+          <input type="submit" value="Add record" style="float: right; margin-bottom: 20px;">
+        </div>
+      </section>
+      </form>
+      
+      <div class="footer">
+        <p class="center">   
+        <p>Copyright ©️ 2022-2023 Group AA</p>
+      </div>
+    
+    </body>
+
+<script>
+  Date.prototype.toDateInputValue = (function() {
+    var local = new Date(this);
+    local.setMinutes(this.getMinutes() - this.getTimezoneOffset());
+    return local.toJSON().slice(0,10);
+  });
+  
+  $(document).ready(function(){
+    if(sessionStorage.getItem('role') != '3')
+      location.href = 'login.html';
+    else{
+      console.log(sessionStorage.getItem('id'))
+      $("#doctorID").val(sessionStorage.getItem('id'));
+    }
+  })
+
+  $("#searchStudent").click(function() {
+      studentID = $("#studentID").val();
+      $.ajax({
+          type: "POST",
+          url: "php/doctor_searchStudent.php",
+          data: {studentID:studentID},
+          dataType: "json", //received data 
+          success: function (data) {
+            if(data.result == true){
+              $('#fName').val(data.fullname);
+              $('#age').val(data.age);
+              $('#gender').val(data.gender);
+              $('#email').val(data.email);
+              $('#contact').val(data.contact);
+
+              $('#date').val(new Date().toDateInputValue());
+              $(".able").removeAttr('disabled')
+
+            }
+            else{
+              alert(data.value);
+            }
+          },
+          error: function (data) {
+            console.log(data);
+          },
+      });
+    })
+
+    var frm = $("#addRecord");
+    frm.submit(function (e) {
+      e.preventDefault();
+      console.log('asd');
+      $.ajax({
+          type: frm.attr('method'),
+          url: frm.attr('action'),
+          data: frm.serialize(),
+          dataType: "json", //received data 
+          success: function (data) {
+            console.log(data);
+            if(data.result == true){
+              alert(data.message);
+              location.reload();
+            }
+          },
+          error: function (data) {
+            console.log(data);
+          },
+      });
+    })
+</script>
+
+</html>

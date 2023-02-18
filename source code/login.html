@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://kit.fontawesome.com/ecceb5410d.js" crossorigin="anonymous"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+  <link rel="stylesheet" href="src/css/style.css">
+  <title>Login</title>
+</head>
+
+<body>
+  <div class="middle">
+    <div class="white_card">
+      <h2 class="center_text">LOGIN</h2>
+      <form action="php/login.php" method="post" id="loginform">
+        <p><i class="fa-solid fa-user"></i><label for="fullName"></label> Username <br>
+        <input type="text" name="username" id="username"></p>
+
+        <p><i class="fa-solid fa-lock"></i><label for="password"></label> Password <br>
+        <input type="password" name="password" id="password"></p>
+
+        <!-- <button id="login">Login</button> -->
+        <input type="submit" value="Login">
+      </form>
+      <p class="center_text">or <a href="index.html">Sign Up</a></p>
+    </div>
+  </div>
+  
+  <script>
+    var frm = $("#loginform");
+    frm.submit(function (e) {
+      e.preventDefault();
+      $.ajax({
+          type: frm.attr('method'),
+          url: frm.attr('action'),
+          data: frm.serialize(),
+          dataType: "json", //received data 
+          success: function (data) {
+            console.log(data);
+            if (data.result == false) {
+              alert("Invalid username or password");
+            }
+            else if (data.result == true) {
+              sessionStorage.setItem("username", data.username);
+              sessionStorage.setItem("fullname", data.fullname);
+              sessionStorage.setItem("id", data.id);
+              sessionStorage.setItem("role", data.role);
+
+              if (data.role == 1)
+                window.location.href = "teacher_homepage.html";
+              else if (data.role == 2)
+                window.location.href = "student_homepage.html";
+              else if (data.role == 3)
+                window.location.href = "doctor_homepage.html";
+            }
+          },
+          error: function (data) {
+            console.log(data);
+          },
+      });
+    })
+  </script>
+</body>
+</html>
+
